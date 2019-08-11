@@ -19,6 +19,7 @@ struct Uzytkownik
 struct Adresat
 {
     int id = 0;
+    int idUzytkownika = 0;
     string imie = "";
     string nazwisko = "";
     string numerTelefonu = "";
@@ -244,7 +245,7 @@ void zapiszBazeDanychAdresatow(vector <Adresat> *w_adresaci)
     //Koniec zapisu do pliku
 }
 
-int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci)
+int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowanegoUzytkownika, int *w_liczbaAdresatowGlobalna)
 {
     int liczbaAdresatow = 0;
 
@@ -271,14 +272,20 @@ int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci)
                 }
             }
 
-            adresat.id = atoi(pobranaLiniaTekstuZBazyDanych.substr(0, pozycjeZnakuRozdzielajacego[0]).c_str());
-            adresat.imie = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[0]+1, pozycjeZnakuRozdzielajacego[1]-pozycjeZnakuRozdzielajacego[0]-1);
-            adresat.nazwisko = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[1]+1, pozycjeZnakuRozdzielajacego[2]-pozycjeZnakuRozdzielajacego[1]-1);
-            adresat.numerTelefonu = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[2]+1, pozycjeZnakuRozdzielajacego[3]-pozycjeZnakuRozdzielajacego[2]-1);
-            adresat.email = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[3]+1, pozycjeZnakuRozdzielajacego[4]-pozycjeZnakuRozdzielajacego[3]-1);
-            adresat.adres = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[4]+1, pozycjeZnakuRozdzielajacego[5]-pozycjeZnakuRozdzielajacego[4]-1);
+            if(atoi(pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[0]+1, pozycjeZnakuRozdzielajacego[1]-pozycjeZnakuRozdzielajacego[0]-1).c_str()) == idZalogowanegoUzytkownika)
+            {
+                adresat.id = atoi(pobranaLiniaTekstuZBazyDanych.substr(0, pozycjeZnakuRozdzielajacego[0]).c_str());
+                adresat.idUzytkownika = atoi(pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[0]+1, pozycjeZnakuRozdzielajacego[1]-pozycjeZnakuRozdzielajacego[0]-1).c_str());
+                adresat.imie = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[1]+1, pozycjeZnakuRozdzielajacego[2]-pozycjeZnakuRozdzielajacego[1]-1);
+                adresat.nazwisko = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[2]+1, pozycjeZnakuRozdzielajacego[3]-pozycjeZnakuRozdzielajacego[2]-1);
+                adresat.numerTelefonu = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[3]+1, pozycjeZnakuRozdzielajacego[4]-pozycjeZnakuRozdzielajacego[3]-1);
+                adresat.email = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[4]+1, pozycjeZnakuRozdzielajacego[5]-pozycjeZnakuRozdzielajacego[4]-1);
+                adresat.adres = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[5]+1, pozycjeZnakuRozdzielajacego[6]-pozycjeZnakuRozdzielajacego[5]-1);
 
-            (*w_adresaci).push_back(adresat);
+                (*w_adresaci).push_back(adresat);
+            }
+
+            *w_liczbaAdresatowGlobalna = *w_liczbaAdresatowGlobalna +1;
 
             pozycjeZnakuRozdzielajacego.clear();
         }
@@ -689,14 +696,15 @@ int main()
     vector <Adresat> *w_adresaci;
     w_adresaci = &adresaci;
 
+    int liczbaAdresatowGlobalna = 0;
+    int *w_liczbaAdresatowGlobalna = &liczbaAdresatowGlobalna;
+
     int liczbaUzytkownikow = odczytBazyDanychUzytkownikowZPliku(w_uzytkownicy);
     int *w_liczbaUzytkownikow = &liczbaUzytkownikow;
 
     int idZalogowanegoUzytkownika = menuUzytkownika(w_uzytkownicy, w_liczbaUzytkownikow);
 
-    cout << "liczbaUzytkownikow = " << liczbaUzytkownikow << endl;
-
-    int liczbaAdresatow = odczytBazyDanychAdresatowZPliku(w_adresaci);
+    int liczbaAdresatowUzytkownika = odczytBazyDanychAdresatowZPliku(w_adresaci, idZalogowanegoUzytkownika, w_liczbaAdresatowGlobalna);
 
     while(1)
     {
@@ -721,11 +729,11 @@ int main()
         if(opcjaMenu == "1")
         {
             system( "cls" );
-            liczbaAdresatow = dodajAdresata(w_adresaci);
+            liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci);
         }
         else if(opcjaMenu == "2")
         {
-            if(liczbaAdresatow == 0)
+            if(liczbaAdresatowUzytkownika == 0)
             {
                 system( "cls" );
                 cout << "Baza danych nie zawiera Adresatow!";
@@ -740,7 +748,7 @@ int main()
         }
         else if(opcjaMenu == "3")
         {
-            if(liczbaAdresatow == 0)
+            if(liczbaAdresatowUzytkownika == 0)
             {
                 system( "cls" );
                 cout << "Baza danych nie zawiera Adresatow!";
@@ -755,7 +763,7 @@ int main()
         }
         else if(opcjaMenu == "4")
         {
-            if(liczbaAdresatow == 0)
+            if(liczbaAdresatowUzytkownika == 0)
             {
                 system( "cls" );
                 cout << "Baza danych nie zawiera Adresatow!";
@@ -770,7 +778,7 @@ int main()
         }
         else if(opcjaMenu == "5")
         {
-            if(liczbaAdresatow == 0)
+            if(liczbaAdresatowUzytkownika == 0)
             {
                 system( "cls" );
                 cout << "Baza danych nie zawiera Adresatow!";
@@ -780,12 +788,12 @@ int main()
             else
             {
                 system( "cls" );
-                liczbaAdresatow = usunAdresata(w_adresaci);
+                liczbaAdresatowUzytkownika = usunAdresata(w_adresaci);
             }
         }
         else if(opcjaMenu == "6")
         {
-            if(liczbaAdresatow == 0)
+            if(liczbaAdresatowUzytkownika == 0)
             {
                 system( "cls" );
                 cout << "Baza danych nie zawiera Adresatow!";
