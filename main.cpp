@@ -9,6 +9,13 @@
 
 using namespace std;
 
+struct Uzytkownik
+{
+    int id = 0;
+    string nazwa = "";
+    string haslo = "";
+};
+
 struct Adresat
 {
     int id = 0;
@@ -18,6 +25,203 @@ struct Adresat
     string email = "";
     string adres = "";
 };
+
+int odczytBazyDanychUzytkownikowZPliku(vector <Uzytkownik> *w_uzytkownicy)
+{
+    int liczbaUzytkownikow = 0;
+
+    fstream bazaDanychUzytkownikow;
+
+    string pobranaLiniaTekstuZBazyDanych = "";
+
+    vector <int> pozycjeZnakuRozdzielajacego;
+
+    Uzytkownik uzytkownik;
+
+    //Odczyt z pliku
+    bazaDanychUzytkownikow.open("bazaDanychUzytkownikow.txt", ios::in);
+
+    if(bazaDanychUzytkownikow.good() == true)
+    {
+        while(getline(bazaDanychUzytkownikow, pobranaLiniaTekstuZBazyDanych))
+        {
+            for(int i=0; i<pobranaLiniaTekstuZBazyDanych.length(); i++)
+            {
+                if(pobranaLiniaTekstuZBazyDanych[i] == '|')
+                {
+                    pozycjeZnakuRozdzielajacego.push_back(i);
+                }
+            }
+
+            uzytkownik.id = atoi(pobranaLiniaTekstuZBazyDanych.substr(0, pozycjeZnakuRozdzielajacego[0]).c_str());
+            uzytkownik.nazwa = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[0]+1, pozycjeZnakuRozdzielajacego[1]-pozycjeZnakuRozdzielajacego[0]-1);
+            uzytkownik.haslo = pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[1]+1, pozycjeZnakuRozdzielajacego[2]-pozycjeZnakuRozdzielajacego[1]-1);
+
+            (*w_uzytkownicy).push_back(uzytkownik);
+
+            pozycjeZnakuRozdzielajacego.clear();
+        }
+    }
+
+    bazaDanychUzytkownikow.close();
+    //Koniec odczytu pliku
+
+    return liczbaUzytkownikow = (*w_uzytkownicy).size();
+}
+
+int logowanieUzytkownika(vector <Uzytkownik> *w_uzytkownicy)
+{
+    string nazwaUzytkownika = "";
+    string hasloUzytkownika = "";
+
+    cout << "LOGOWANIE UZYTKOWNIKA" << endl;
+    cout << "Podaj nazwe uzytkownika: ";
+    cin >> nazwaUzytkownika;
+
+    vector<Uzytkownik>::iterator koniecWektora = (*w_uzytkownicy).end();
+    for(vector<Uzytkownik>::iterator itr = (*w_uzytkownicy).begin(); itr !=koniecWektora; ++itr)
+    {
+        if(itr->nazwa == nazwaUzytkownika)
+        {
+            for(int liczbaProb=1; liczbaProb<4; liczbaProb++)
+            {
+                cout << "Podaj haslo (" << liczbaProb << "-a proba): ";
+                cin >> hasloUzytkownika;
+
+                if(itr->haslo == hasloUzytkownika)
+                {
+                    system( "cls" );
+                    cout << "Poprawnie zalogowano!" << endl;
+                    Sleep(1500);
+                    system( "cls" );
+                    return itr->id;
+                }
+
+                cout << "Niepoprawne haslo!" << endl;
+                Sleep(1500);
+                system( "cls" );
+                cout << "LOGOWANIE UZYTKOWNIKA" << endl;
+                cout << "Podaj nazwe uzytkownika: " << nazwaUzytkownika << endl;
+            }
+
+            system( "cls" );
+            cout << "Wykorzystano maksymalna liczbe prob!" << endl;
+            Sleep(1500);
+            system( "cls" );
+            return 0;
+        }
+    }
+
+    system( "cls" );
+    cout << "Uzytkownik nie istnieje!" << endl;
+    Sleep(1500);
+    system( "cls" );
+
+    return 0;
+}
+
+int rejestracjaUzytkownika(vector <Uzytkownik> *w_uzytkownicy, int *w_liczbaUzytkownikow)
+{
+    fstream bazaDanychUzytkownikow;
+    Uzytkownik uzytkownik;
+
+    string nazwaUzytkownika = "";
+    string hasloUzytkownika = "";
+
+    cout << "REJESTRACJA UZYTKOWNIKA" << endl;
+    cout << "Podaj nazwe uzytkownika: ";
+    cin >> nazwaUzytkownika;
+
+    vector<Uzytkownik>::iterator koniecWektora = (*w_uzytkownicy).end();
+    for(vector<Uzytkownik>::iterator itr = (*w_uzytkownicy).begin(); itr !=koniecWektora; ++itr)
+    {
+        if(itr->nazwa == nazwaUzytkownika)
+        {
+            system( "cls" );
+            cout << "Podany uzytkownik istnieje juz w bazie danych!";
+            Sleep(1500);
+            system( "cls" );
+            return *w_liczbaUzytkownikow;
+        }
+    }
+
+    cout << "Podaj haslo uzytkownika: ";
+    cin >> hasloUzytkownika;
+
+    uzytkownik.id = (*w_uzytkownicy).size()+1;
+    uzytkownik.nazwa = nazwaUzytkownika;
+    uzytkownik.haslo = hasloUzytkownika;
+
+    (*w_uzytkownicy).push_back(uzytkownik);
+
+    //Zapis do pliku
+    bazaDanychUzytkownikow.open("bazaDanychUzytkownikow.txt", ios::out | ios::app);
+
+    bazaDanychUzytkownikow << uzytkownik.id << '|';
+    bazaDanychUzytkownikow << uzytkownik.nazwa << '|';
+    bazaDanychUzytkownikow << uzytkownik.haslo << '|' << endl;
+
+    bazaDanychUzytkownikow.close();
+    //Koniec zapisu do pliku
+
+    cout << "Uzytkownik zostal dodany do bazy danych!";
+    Sleep(1500);
+    system( "cls" );
+
+    return (*w_uzytkownicy).size();
+}
+
+int menuUzytkownika(vector <Uzytkownik> *w_uzytkownicy, int *w_liczbaUzytkownikow)
+{
+    while(1)
+    {
+        cout << "KSIAZKA ADRESOWA" << endl;
+        cout << "1. Logowanie" << endl;
+        cout << "2. Rejestracja" << endl;
+        cout << "3. Zamknij program" << endl;
+
+        string opcjaMenu = "";
+
+        do
+        {
+            cout << "Twoj wybor:";
+            cin >> opcjaMenu;
+        }
+        while (opcjaMenu != "1" && opcjaMenu != "2" && opcjaMenu != "3");
+
+        if(opcjaMenu == "1")
+        {
+            if(*w_liczbaUzytkownikow == 0)
+            {
+                system( "cls" );
+                cout << "Baza danych nie zawiera Uzytkownikow! Zarejestruj sie!";
+                Sleep(1500);
+                system( "cls" );
+            }
+            else
+            {
+                system( "cls" );
+                int idZalogowanegoUzytkownika = logowanieUzytkownika(w_uzytkownicy);
+
+                if(idZalogowanegoUzytkownika != 0)
+                {
+                    return idZalogowanegoUzytkownika;
+                }
+            }
+        }
+        else if(opcjaMenu == "2")
+        {
+            system( "cls" );
+            *w_liczbaUzytkownikow = rejestracjaUzytkownika(w_uzytkownicy, w_liczbaUzytkownikow);
+        }
+        else if(opcjaMenu == "3")
+        {
+            system( "cls" );
+            cout << "Dziekujemy za skorzystanie z aplikacji!" << endl;
+            exit(0);
+        }
+    }
+}
 
 void zapiszBazeDanychAdresatow(vector <Adresat> *w_adresaci)
 {
@@ -477,9 +681,20 @@ int usunAdresata(vector <Adresat> *w_adresaci)
 
 int main()
 {
+    vector <Uzytkownik> uzytkownicy;
+    vector <Uzytkownik> *w_uzytkownicy;
+    w_uzytkownicy = &uzytkownicy;
+
     vector <Adresat> adresaci;
     vector <Adresat> *w_adresaci;
     w_adresaci = &adresaci;
+
+    int liczbaUzytkownikow = odczytBazyDanychUzytkownikowZPliku(w_uzytkownicy);
+    int *w_liczbaUzytkownikow = &liczbaUzytkownikow;
+
+    int idZalogowanegoUzytkownika = menuUzytkownika(w_uzytkownicy, w_liczbaUzytkownikow);
+
+    cout << "liczbaUzytkownikow = " << liczbaUzytkownikow << endl;
 
     int liczbaAdresatow = odczytBazyDanychAdresatowZPliku(w_adresaci);
 
