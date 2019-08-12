@@ -297,7 +297,7 @@ int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowa
     return liczbaAdresatow = (*w_adresaci).size();
 }
 
-int dodajAdresata(vector <Adresat> *w_adresaci)
+int dodajAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, int idZalogowanegoUzytkownika)
 {
     fstream bazaDanychAdresatow;
 
@@ -335,14 +335,15 @@ int dodajAdresata(vector <Adresat> *w_adresaci)
         }
     }
 
-    if((*w_adresaci).size() == 0)
+    if(*w_liczbaAdresatowGlobalna == 0)
     {
         adresat.id = 1;
     }
     else
     {
-        adresat.id = (*w_adresaci)[(*w_adresaci).size()-1].id + 1;
+        adresat.id = *w_liczbaAdresatowGlobalna + 1;
     }
+    adresat.idUzytkownika = idZalogowanegoUzytkownika;
     adresat.imie = imie;
     adresat.nazwisko = nazwisko;
     adresat.numerTelefonu = numerTelefonu;
@@ -351,10 +352,13 @@ int dodajAdresata(vector <Adresat> *w_adresaci)
 
     (*w_adresaci).push_back(adresat);
 
+    *w_liczbaAdresatowGlobalna = *w_liczbaAdresatowGlobalna + 1;
+
     //Zapis do pliku
     bazaDanychAdresatow.open("bazaDanychAdresatow.txt", ios::out | ios::app);
 
     bazaDanychAdresatow << adresat.id << '|';
+    bazaDanychAdresatow << adresat.idUzytkownika << '|';
     bazaDanychAdresatow << adresat.imie << '|';
     bazaDanychAdresatow << adresat.nazwisko << '|';
     bazaDanychAdresatow << adresat.numerTelefonu << '|';
@@ -729,7 +733,7 @@ int main()
         if(opcjaMenu == "1")
         {
             system( "cls" );
-            liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci);
+            liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci, w_liczbaAdresatowGlobalna, idZalogowanegoUzytkownika);
         }
         else if(opcjaMenu == "2")
         {
