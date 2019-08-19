@@ -264,7 +264,7 @@ void zapiszBazeDanychAdresatow(int idEdytowanegoAdresata, int typOperacji)
     rename("tymczasowaBazaDanychAdresatow.txt", "bazaDanychAdresatow.txt");
 }
 
-int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowanegoUzytkownika, int *w_liczbaAdresatowGlobalna)
+int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowanegoUzytkownika, int *w_liczbaAdresatowGlobalna, vector <int> *w_idAdresatowGlobalne)
 {
     int liczbaAdresatow = 0;
 
@@ -290,6 +290,8 @@ int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowa
                     pozycjeZnakuRozdzielajacego.push_back(i);
                 }
             }
+
+            (*w_idAdresatowGlobalne).push_back(atoi(pobranaLiniaTekstuZBazyDanych.substr(0, pozycjeZnakuRozdzielajacego[0]).c_str()));
 
             if(atoi(pobranaLiniaTekstuZBazyDanych.substr(pozycjeZnakuRozdzielajacego[0]+1, pozycjeZnakuRozdzielajacego[1]-pozycjeZnakuRozdzielajacego[0]-1).c_str()) == idZalogowanegoUzytkownika)
             {
@@ -719,15 +721,21 @@ int main()
     vector <Adresat> *w_adresaci;
     w_adresaci = &adresaci;
 
-    int liczbaAdresatowGlobalna = 0;
-    int *w_liczbaAdresatowGlobalna = &liczbaAdresatowGlobalna;
-
+    //Uzytkownicy
     int liczbaUzytkownikow = odczytBazyDanychUzytkownikowZPliku(w_uzytkownicy);
     int *w_liczbaUzytkownikow = &liczbaUzytkownikow;
 
     int idZalogowanegoUzytkownika = menuUzytkownika(w_uzytkownicy, w_liczbaUzytkownikow);
 
-    int liczbaAdresatowUzytkownika = odczytBazyDanychAdresatowZPliku(w_adresaci, idZalogowanegoUzytkownika, w_liczbaAdresatowGlobalna);
+    //Adresaci
+    int liczbaAdresatowGlobalna = 0;
+    int *w_liczbaAdresatowGlobalna = &liczbaAdresatowGlobalna;
+
+    vector<int> idAdresatowGlobalne;
+    vector <int> *w_idAdresatowGlobalne;
+    w_idAdresatowGlobalne = &idAdresatowGlobalne;
+
+    int liczbaAdresatowUzytkownika = odczytBazyDanychAdresatowZPliku(w_adresaci, idZalogowanegoUzytkownika, w_liczbaAdresatowGlobalna, w_idAdresatowGlobalne);
 
     while(1)
     {
