@@ -224,25 +224,44 @@ int menuUzytkownika(vector <Uzytkownik> *w_uzytkownicy, int *w_liczbaUzytkowniko
     }
 }
 
-void zapiszBazeDanychAdresatow(vector <Adresat> *w_adresaci)
+void zapiszBazeDanychAdresatow(int idEdytowanegoAdresata, int typOperacji)
 {
+    //typOperacji == 0 -> usuwanie adresata
+    //typOperacji == 1 -> edycja adresata
+
+    string pobranaLiniaTekstuZBazyDanych = "";
+
     fstream bazaDanychAdresatow;
+    //Odczyt z pliku
+    bazaDanychAdresatow.open("bazaDanychAdresatow.txt", ios::in);
 
+    fstream tymczasowaBazaDanychAdresatow;
     //Zapis do pliku
-    bazaDanychAdresatow.open("bazaDanychAdresatow.txt", ios::out);
+    tymczasowaBazaDanychAdresatow.open("tymczasowaBazaDanychAdresatow.txt", ios::out);
 
-    for(int indeksAdresata=0; indeksAdresata<(*w_adresaci).size(); indeksAdresata++)
+    if(bazaDanychAdresatow.good() == true)
     {
-        bazaDanychAdresatow << (*w_adresaci)[indeksAdresata].id << '|';
-        bazaDanychAdresatow << (*w_adresaci)[indeksAdresata].imie << '|';
-        bazaDanychAdresatow << (*w_adresaci)[indeksAdresata].nazwisko << '|';
-        bazaDanychAdresatow << (*w_adresaci)[indeksAdresata].numerTelefonu << '|';
-        bazaDanychAdresatow << (*w_adresaci)[indeksAdresata].email << '|';
-        bazaDanychAdresatow << (*w_adresaci)[indeksAdresata].adres << '|' << endl;
+        if(typOperacji == 0)
+        {
+            while(getline(bazaDanychAdresatow, pobranaLiniaTekstuZBazyDanych))
+            {
+                if(atoi(pobranaLiniaTekstuZBazyDanych.substr(0, 1).c_str()) != idEdytowanegoAdresata)
+                {
+                    tymczasowaBazaDanychAdresatow << pobranaLiniaTekstuZBazyDanych << endl;
+                }
+            }
+        }
     }
 
     bazaDanychAdresatow.close();
+    //Koniec odczytu pliku
+
+    tymczasowaBazaDanychAdresatow.close();
     //Koniec zapisu do pliku
+
+    remove("bazaDanychAdresatow.txt");
+
+    rename("tymczasowaBazaDanychAdresatow.txt", "bazaDanychAdresatow.txt");
 }
 
 int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowanegoUzytkownika, int *w_liczbaAdresatowGlobalna)
@@ -558,7 +577,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].imie = imie;
 
-        zapiszBazeDanychAdresatow(w_adresaci);
+        //zapiszBazeDanychAdresatow(w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -575,7 +594,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].nazwisko = nazwisko;
 
-        zapiszBazeDanychAdresatow(w_adresaci);
+        //zapiszBazeDanychAdresatow(w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -593,7 +612,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].numerTelefonu = numerTelefonu;
 
-        zapiszBazeDanychAdresatow(w_adresaci);
+        //zapiszBazeDanychAdresatow(w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -610,7 +629,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].email = email;
 
-        zapiszBazeDanychAdresatow(w_adresaci);
+        //zapiszBazeDanychAdresatow(w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -628,7 +647,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].adres = adres;
 
-        zapiszBazeDanychAdresatow(w_adresaci);
+        //zapiszBazeDanychAdresatow(w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -674,7 +693,7 @@ int usunAdresata(vector <Adresat> *w_adresaci)
     {
         (*w_adresaci).erase((*w_adresaci).begin()+indeksAdresata);
 
-        zapiszBazeDanychAdresatow(w_adresaci);
+        zapiszBazeDanychAdresatow(id, 0);
 
         cout << endl << "Adresat zostal usuniety z bazy danych!";
         Sleep(1500);
