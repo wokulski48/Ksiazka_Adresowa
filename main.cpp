@@ -224,7 +224,7 @@ int menuUzytkownika(vector <Uzytkownik> *w_uzytkownicy, int *w_liczbaUzytkowniko
     }
 }
 
-void zapiszBazeDanychAdresatow(int idEdytowanegoAdresata, int typOperacji)
+void zapiszBazeDanychAdresatow(int idEdytowanegoAdresata, int typOperacji, vector <Adresat> *w_adresaci)
 {
     //typOperacji == 0 -> usuwanie adresata
     //typOperacji == 1 -> edycja adresata
@@ -251,13 +251,43 @@ void zapiszBazeDanychAdresatow(int idEdytowanegoAdresata, int typOperacji)
                 }
             }
         }
+        else
+        {
+            while(getline(bazaDanychAdresatow, pobranaLiniaTekstuZBazyDanych))
+            {
+                if(atoi(pobranaLiniaTekstuZBazyDanych.substr(0, 1).c_str()) == idEdytowanegoAdresata)
+                {
+                    int indeksEdytowanegoAdresata=0;
+
+                    for(indeksEdytowanegoAdresata=0; indeksEdytowanegoAdresata<(*w_adresaci).size(); indeksEdytowanegoAdresata++)
+                    {
+                        if((*w_adresaci)[indeksEdytowanegoAdresata].id == idEdytowanegoAdresata)
+                        {
+                            break;
+                        }
+                    }
+
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].id << '|';
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].idUzytkownika << '|';
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].imie << '|';
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].nazwisko << '|';
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].numerTelefonu << '|';
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].email << '|';
+                    tymczasowaBazaDanychAdresatow << (*w_adresaci)[indeksEdytowanegoAdresata].adres << '|' << endl;
+                }
+                else
+                {
+                    tymczasowaBazaDanychAdresatow << pobranaLiniaTekstuZBazyDanych << endl;
+                }
+            }
+        }
     }
 
     bazaDanychAdresatow.close();
-    //Koniec odczytu pliku
+//Koniec odczytu pliku
 
     tymczasowaBazaDanychAdresatow.close();
-    //Koniec zapisu do pliku
+//Koniec zapisu do pliku
 
     remove("bazaDanychAdresatow.txt");
 
@@ -318,7 +348,7 @@ int odczytBazyDanychAdresatowZPliku(vector <Adresat> *w_adresaci, int idZalogowa
     return liczbaAdresatow = (*w_adresaci).size();
 }
 
-int dodajAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, int idZalogowanegoUzytkownika)
+int dodajAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, int idZalogowanegoUzytkownika, vector <int> *w_idAdresatowGlobalne)
 {
     fstream bazaDanychAdresatow;
 
@@ -362,8 +392,9 @@ int dodajAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, 
     }
     else
     {
-        adresat.id = *w_liczbaAdresatowGlobalna + 1;
+        adresat.id = (*w_idAdresatowGlobalne).back()+1;
     }
+
     adresat.idUzytkownika = idZalogowanegoUzytkownika;
     adresat.imie = imie;
     adresat.nazwisko = nazwisko;
@@ -374,6 +405,8 @@ int dodajAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, 
     (*w_adresaci).push_back(adresat);
 
     *w_liczbaAdresatowGlobalna = *w_liczbaAdresatowGlobalna + 1;
+
+    (*w_idAdresatowGlobalne).push_back(adresat.id);
 
     //Zapis do pliku
     bazaDanychAdresatow.open("bazaDanychAdresatow.txt", ios::out | ios::app);
@@ -579,7 +612,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].imie = imie;
 
-        //zapiszBazeDanychAdresatow(w_adresaci);
+        zapiszBazeDanychAdresatow(id, 1, w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -596,7 +629,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].nazwisko = nazwisko;
 
-        //zapiszBazeDanychAdresatow(w_adresaci);
+        zapiszBazeDanychAdresatow(id, 1, w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -614,7 +647,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].numerTelefonu = numerTelefonu;
 
-        //zapiszBazeDanychAdresatow(w_adresaci);
+        zapiszBazeDanychAdresatow(id, 1, w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -631,7 +664,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].email = email;
 
-        //zapiszBazeDanychAdresatow(w_adresaci);
+        zapiszBazeDanychAdresatow(id, 1, w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -649,7 +682,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
 
         (*w_adresaci)[indeksAdresata].adres = adres;
 
-        //zapiszBazeDanychAdresatow(w_adresaci);
+        zapiszBazeDanychAdresatow(id, 1, w_adresaci);
 
         cout << endl << "Dane adresata zostaly zaktualizowane!";
         Sleep(1500);
@@ -662,7 +695,7 @@ void edytujAdresata(vector <Adresat> *w_adresaci)
     }
 }
 
-int usunAdresata(vector <Adresat> *w_adresaci)
+int usunAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, vector <int> *w_idAdresatowGlobalne)
 {
     int id, indeksAdresata = 0;
     string potwierdzenieUsunieciaAdresata = "";
@@ -695,7 +728,18 @@ int usunAdresata(vector <Adresat> *w_adresaci)
     {
         (*w_adresaci).erase((*w_adresaci).begin()+indeksAdresata);
 
-        zapiszBazeDanychAdresatow(id, 0);
+        w_liczbaAdresatowGlobalna = w_liczbaAdresatowGlobalna - 1;
+
+        for(int indeksAdresataGlobalnego=0; indeksAdresataGlobalnego<(*w_idAdresatowGlobalne).size(); indeksAdresataGlobalnego++)
+        {
+            if((*w_idAdresatowGlobalne)[indeksAdresataGlobalnego] == id)
+            {
+                (*w_idAdresatowGlobalne).erase((*w_idAdresatowGlobalne).begin()+indeksAdresataGlobalnego);
+                break;
+            }
+        }
+
+        zapiszBazeDanychAdresatow(id, 0, w_adresaci);
 
         cout << endl << "Adresat zostal usuniety z bazy danych!";
         Sleep(1500);
@@ -760,7 +804,7 @@ int main()
         if(opcjaMenu == "1")
         {
             system( "cls" );
-            liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci, w_liczbaAdresatowGlobalna, idZalogowanegoUzytkownika);
+            liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci, w_liczbaAdresatowGlobalna, idZalogowanegoUzytkownika, w_idAdresatowGlobalne);
         }
         else if(opcjaMenu == "2")
         {
@@ -819,7 +863,7 @@ int main()
             else
             {
                 system( "cls" );
-                liczbaAdresatowUzytkownika = usunAdresata(w_adresaci);
+                liczbaAdresatowUzytkownika = usunAdresata(w_adresaci, w_liczbaAdresatowGlobalna, w_idAdresatowGlobalne);
             }
         }
         else if(opcjaMenu == "6")
