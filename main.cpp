@@ -769,123 +769,128 @@ int main()
     int liczbaUzytkownikow = odczytBazyDanychUzytkownikowZPliku(w_uzytkownicy);
     int *w_liczbaUzytkownikow = &liczbaUzytkownikow;
 
-    int idZalogowanegoUzytkownika = menuUzytkownika(w_uzytkownicy, w_liczbaUzytkownikow);
-
-    //Adresaci
-    int liczbaAdresatowGlobalna = 0;
-    int *w_liczbaAdresatowGlobalna = &liczbaAdresatowGlobalna;
-
-    vector<int> idAdresatowGlobalne;
-    vector <int> *w_idAdresatowGlobalne;
-    w_idAdresatowGlobalne = &idAdresatowGlobalne;
-
-    int liczbaAdresatowUzytkownika = odczytBazyDanychAdresatowZPliku(w_adresaci, idZalogowanegoUzytkownika, w_liczbaAdresatowGlobalna, w_idAdresatowGlobalne);
-
     while(1)
     {
-        cout << "KSIAZKA ADRESOWA" << endl;
-        cout << "1. Dodaj adresata" << endl;
-        cout << "2. Wyszukaj po imieniu" << endl;
-        cout << "3. Wyszukaj po nazwisku" << endl;
-        cout << "4. Wyswietl wszystkich adresatow" << endl;
-        cout << "5. Usun adresata" << endl;
-        cout << "6. Edytuj adresata" << endl;
-        cout << "9. Zakoncz program" << endl;
+        int idZalogowanegoUzytkownika = menuUzytkownika(w_uzytkownicy, w_liczbaUzytkownikow);
 
-        string opcjaMenu = "";
+        //Adresaci
+        int liczbaAdresatowGlobalna = 0;
+        int *w_liczbaAdresatowGlobalna = &liczbaAdresatowGlobalna;
 
-        do
-        {
-            cout << "Twoj wybor:";
-            cin >> opcjaMenu;
-        }
-        while (opcjaMenu != "1" && opcjaMenu != "2" && opcjaMenu != "3" && opcjaMenu != "4" && opcjaMenu != "5" && opcjaMenu != "6" && opcjaMenu != "9");
+        vector<int> idAdresatowGlobalne;
+        vector <int> *w_idAdresatowGlobalne;
+        w_idAdresatowGlobalne = &idAdresatowGlobalne;
 
-        if(opcjaMenu == "1")
+        int liczbaAdresatowUzytkownika = odczytBazyDanychAdresatowZPliku(w_adresaci, idZalogowanegoUzytkownika, w_liczbaAdresatowGlobalna, w_idAdresatowGlobalne);
+
+        while(1)
         {
-            system( "cls" );
-            liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci, w_liczbaAdresatowGlobalna, idZalogowanegoUzytkownika, w_idAdresatowGlobalne);
-        }
-        else if(opcjaMenu == "2")
-        {
-            if(liczbaAdresatowUzytkownika == 0)
+            cout << "KSIAZKA ADRESOWA" << endl;
+            cout << "1. Dodaj adresata" << endl;
+            cout << "2. Wyszukaj po imieniu" << endl;
+            cout << "3. Wyszukaj po nazwisku" << endl;
+            cout << "4. Wyswietl wszystkich adresatow" << endl;
+            cout << "5. Usun adresata" << endl;
+            cout << "6. Edytuj adresata" << endl;
+            cout << "9. Wyloguj sie" << endl;
+
+            string opcjaMenu = "";
+
+            do
+            {
+                cout << "Twoj wybor:";
+                cin >> opcjaMenu;
+            }
+            while (opcjaMenu != "1" && opcjaMenu != "2" && opcjaMenu != "3" && opcjaMenu != "4" && opcjaMenu != "5" && opcjaMenu != "6" && opcjaMenu != "9");
+
+            if(opcjaMenu == "1")
             {
                 system( "cls" );
-                cout << "Baza danych nie zawiera Adresatow!";
+                liczbaAdresatowUzytkownika = dodajAdresata(w_adresaci, w_liczbaAdresatowGlobalna, idZalogowanegoUzytkownika, w_idAdresatowGlobalne);
+            }
+            else if(opcjaMenu == "2")
+            {
+                if(liczbaAdresatowUzytkownika == 0)
+                {
+                    system( "cls" );
+                    cout << "Baza danych nie zawiera Adresatow!";
+                    Sleep(1500);
+                    system( "cls" );
+                }
+                else
+                {
+                    system( "cls" );
+                    wyszukajPoImieniu(w_adresaci);
+                }
+            }
+            else if(opcjaMenu == "3")
+            {
+                if(liczbaAdresatowUzytkownika == 0)
+                {
+                    system( "cls" );
+                    cout << "Baza danych nie zawiera Adresatow!";
+                    Sleep(1500);
+                    system( "cls" );
+                }
+                else
+                {
+                    system( "cls" );
+                    wyszukajPoNazwisku(w_adresaci);
+                }
+            }
+            else if(opcjaMenu == "4")
+            {
+                if(liczbaAdresatowUzytkownika == 0)
+                {
+                    system( "cls" );
+                    cout << "Baza danych nie zawiera Adresatow!";
+                    Sleep(1500);
+                    system( "cls" );
+                }
+                else
+                {
+                    system( "cls" );
+                    wyswietlWszystkichAdresatow(w_adresaci);
+                }
+            }
+            else if(opcjaMenu == "5")
+            {
+                if(liczbaAdresatowUzytkownika == 0)
+                {
+                    system( "cls" );
+                    cout << "Baza danych nie zawiera Adresatow!";
+                    Sleep(1500);
+                    system( "cls" );
+                }
+                else
+                {
+                    system( "cls" );
+                    liczbaAdresatowUzytkownika = usunAdresata(w_adresaci, w_liczbaAdresatowGlobalna, w_idAdresatowGlobalne);
+                }
+            }
+            else if(opcjaMenu == "6")
+            {
+                if(liczbaAdresatowUzytkownika == 0)
+                {
+                    system( "cls" );
+                    cout << "Baza danych nie zawiera Adresatow!";
+                    Sleep(1500);
+                    system( "cls" );
+                }
+                else
+                {
+                    system( "cls" );
+                    edytujAdresata(w_adresaci);
+                }
+            }
+            else if(opcjaMenu == "9")
+            {
+                system( "cls" );
+                cout << "Poprawnie wylogowano!" << endl;
                 Sleep(1500);
                 system( "cls" );
+                break;
             }
-            else
-            {
-                system( "cls" );
-                wyszukajPoImieniu(w_adresaci);
-            }
-        }
-        else if(opcjaMenu == "3")
-        {
-            if(liczbaAdresatowUzytkownika == 0)
-            {
-                system( "cls" );
-                cout << "Baza danych nie zawiera Adresatow!";
-                Sleep(1500);
-                system( "cls" );
-            }
-            else
-            {
-                system( "cls" );
-                wyszukajPoNazwisku(w_adresaci);
-            }
-        }
-        else if(opcjaMenu == "4")
-        {
-            if(liczbaAdresatowUzytkownika == 0)
-            {
-                system( "cls" );
-                cout << "Baza danych nie zawiera Adresatow!";
-                Sleep(1500);
-                system( "cls" );
-            }
-            else
-            {
-                system( "cls" );
-                wyswietlWszystkichAdresatow(w_adresaci);
-            }
-        }
-        else if(opcjaMenu == "5")
-        {
-            if(liczbaAdresatowUzytkownika == 0)
-            {
-                system( "cls" );
-                cout << "Baza danych nie zawiera Adresatow!";
-                Sleep(1500);
-                system( "cls" );
-            }
-            else
-            {
-                system( "cls" );
-                liczbaAdresatowUzytkownika = usunAdresata(w_adresaci, w_liczbaAdresatowGlobalna, w_idAdresatowGlobalne);
-            }
-        }
-        else if(opcjaMenu == "6")
-        {
-            if(liczbaAdresatowUzytkownika == 0)
-            {
-                system( "cls" );
-                cout << "Baza danych nie zawiera Adresatow!";
-                Sleep(1500);
-                system( "cls" );
-            }
-            else
-            {
-                system( "cls" );
-                edytujAdresata(w_adresaci);
-            }
-        }
-        else if(opcjaMenu == "9")
-        {
-            system( "cls" );
-            cout << "Dziekujemy za skorzystanie z aplikacji!" << endl;
-            exit(0);
         }
     }
 
