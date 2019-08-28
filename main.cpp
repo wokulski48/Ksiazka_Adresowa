@@ -755,6 +755,53 @@ int usunAdresata(vector <Adresat> *w_adresaci, int *w_liczbaAdresatowGlobalna, v
     return (*w_adresaci).size();
 }
 
+void zmianaHaslaUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> *w_uzytkownicy)
+{
+    string noweHasloUzytkownika = "";
+    int liczbaProbZmianHasla = 1;
+
+    cout << "ZMIANA HASLA UZYTKOWNIKA" << endl;
+    cout << "Podaj nowe haslo dla uzytkownika (" << (*w_uzytkownicy)[idZalogowanegoUzytkownika-1].nazwa << "): ";
+
+    do
+    {
+        if(liczbaProbZmianHasla > 1)
+        {
+            cout << "Podaj inne haslo!";
+            Sleep(1500);
+            system( "cls" );
+            cout << "ZMIANA HASLA UZYTKOWNIKA" << endl;
+            cout << "Podaj nowe haslo dla uzytkownika (" << (*w_uzytkownicy)[idZalogowanegoUzytkownika-1].nazwa << "): ";
+        }
+
+        cin >> noweHasloUzytkownika;
+        liczbaProbZmianHasla++;
+    }
+    while (noweHasloUzytkownika == (*w_uzytkownicy)[idZalogowanegoUzytkownika-1].haslo);
+
+    (*w_uzytkownicy)[idZalogowanegoUzytkownika-1].haslo = noweHasloUzytkownika;
+
+    fstream bazaDanychUzytkownikow;
+
+    //Zapis do pliku
+    bazaDanychUzytkownikow.open("bazaDanychUzytkownikow.txt", ios::out);
+
+    vector<Uzytkownik>::iterator koniecWektora = (*w_uzytkownicy).end();
+    for(vector<Uzytkownik>::iterator itr = (*w_uzytkownicy).begin(); itr !=koniecWektora; ++itr)
+    {
+        bazaDanychUzytkownikow << itr->id << '|';
+        bazaDanychUzytkownikow << itr->nazwa << '|';
+        bazaDanychUzytkownikow << itr->haslo << '|' << endl;
+    }
+
+    bazaDanychUzytkownikow.close();
+    //Koniec zapisu do pliku
+
+    cout << "Haslo zostalo zmienione!";
+    Sleep(1500);
+    system( "cls" );
+}
+
 int main()
 {
     vector <Uzytkownik> uzytkownicy;
@@ -792,6 +839,7 @@ int main()
             cout << "4. Wyswietl wszystkich adresatow" << endl;
             cout << "5. Usun adresata" << endl;
             cout << "6. Edytuj adresata" << endl;
+            cout << "7. Zmien haslo" << endl;
             cout << "9. Wyloguj sie" << endl;
 
             string opcjaMenu = "";
@@ -801,7 +849,7 @@ int main()
                 cout << "Twoj wybor:";
                 cin >> opcjaMenu;
             }
-            while (opcjaMenu != "1" && opcjaMenu != "2" && opcjaMenu != "3" && opcjaMenu != "4" && opcjaMenu != "5" && opcjaMenu != "6" && opcjaMenu != "9");
+            while (opcjaMenu != "1" && opcjaMenu != "2" && opcjaMenu != "3" && opcjaMenu != "4" && opcjaMenu != "5" && opcjaMenu != "6" && opcjaMenu != "7" && opcjaMenu != "9");
 
             if(opcjaMenu == "1")
             {
@@ -883,12 +931,18 @@ int main()
                     edytujAdresata(w_adresaci);
                 }
             }
+            else if(opcjaMenu == "7")
+            {
+                system( "cls" );
+                zmianaHaslaUzytkownika(idZalogowanegoUzytkownika, w_uzytkownicy);
+            }
             else if(opcjaMenu == "9")
             {
                 system( "cls" );
                 cout << "Poprawnie wylogowano!" << endl;
                 Sleep(1500);
                 system( "cls" );
+                adresaci.clear();
                 break;
             }
         }
